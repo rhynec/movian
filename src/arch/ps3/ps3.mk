@@ -29,7 +29,7 @@ SPRXLINKER := $(PSL1GHT)/host/bin/sprxlinker
 PACKAGE_FINALIZE := $(PSL1GHT)/host/bin/package_finalize
 
 ICON0 := $(TOPDIR)/support/ps3icon.png
-APPID		:=	HTSS00003
+APPID		:=	HP0MOVIAN
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 
 SFOXML          := $(TOPDIR)/support/sfo.xml
@@ -60,7 +60,7 @@ ${SYMS}: ${BUILDDIR}/${APPNAME}.ziptail src/arch/ps3/ps3.mk
 ${ZS}:  ${BUILDDIR}/zipbundles/bundle.zip ${SYMS} src/arch/ps3/ps3.mk $(BUILDDIR)/PARAM.SFO ${ICON0}
 	cp $< $@
 	cp ${ICON0} $(BUILDDIR)/ICON0.PNG
-	zip -9j ${ZS} ${SYMS} $(BUILDDIR)/PARAM.SFO $(BUILDDIR)/ICON0.PNG
+	zip -9j ${ZS} ${SYMS}
 
 ${SELF}: ${ELF} ${ZS} src/arch/ps3/ps3.mk
 	${MAKE_SELF} $< $@

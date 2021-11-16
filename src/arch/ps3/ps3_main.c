@@ -58,8 +58,6 @@
 
 extern int sysUtilGetSystemParamInt(int, int *);
 
-static void replace_gamefile(const char *name);
-
 // #define EMERGENCY_EXIT_THREAD
 static uint64_t ticks_per_us;
 
@@ -186,7 +184,7 @@ memlogger_fn(callout_t *co, void *aux)
   uint64_t size, avail;
 
   int r = Lv2Syscall3(840,
-                      (uint64_t)"/dev_hdd0/game/HTSS00003/",
+                      (uint64_t)"/dev_hdd0/game/HP0MOVIAN/",
                       (uint64_t)&size,
                       (uint64_t)&avail);
 
@@ -628,15 +626,6 @@ typedef struct sys_event_queue_attr {
   char name[8];
 } sys_event_queue_attribute_t;
 
-
-static int no_sfo_overwrite;
-
-static void
-ps3_dev_opts(void (*addopt)(const char *title, const char *id, int *valp))
-{
-  addopt("Don't overwrite SFO file", "no_sfo_overwrite", &no_sfo_overwrite);
-}
-
 /**
  *
  */
@@ -649,7 +638,6 @@ main(int argc, char **argv)
   gconf.concurrency = 2;
   gconf.can_standby = 1;
   gconf.trace_level = TRACE_DEBUG;
-  gconf.arch_dev_opts = ps3_dev_opts;
 
   load_syms();
 
@@ -695,11 +683,6 @@ main(int argc, char **argv)
 
   static callout_t co;
   scan_root_fs(&co, NULL);
-
-  if(!no_sfo_overwrite) {
-    replace_gamefile("PARAM.SFO");
-    replace_gamefile("ICON0.PNG");
-  }
 
   extern void glw_ps3_start(void);
   glw_ps3_start();
@@ -754,70 +737,4 @@ arch_pipe(int pipefd[2])
   }
 
   return 0;
-}
-
-
-/**
- *
- */
-static void
-overwrite_gamefile(int fd, const void *buf, int size, const char *name)
-{
-  if(lseek(fd, 0, SEEK_SET) != 0)
-    return;
-  if(write(fd, buf, size) != size)
-    return;
-  ftruncate(fd, size);
-  TRACE(TRACE_INFO, "SYSTEM", "%s updated", name);
-}
-
-
-/**
- *
- */
-static void
-replace_gamefile(const char *name)
-{
-  char path[256];
-  snprintf(path, sizeof(path), "%s/%s", app_dataroot(), name);
-
-  fa_handle_t *fh = fa_open(path, NULL, 0);
-
-  if(fh == NULL) {
-    return;
-  }
-  int size = fa_fsize(fh);
-  char *buf = malloc(size);
-
-  int r = fa_read(fh, buf, size);
-  fa_close(fh);
-  if(r != size) {
-    free(buf);
-    return;
-  }
-
-  snprintf(path, sizeof(path), "%s/../%s", gconf.dirname, name);
-  int fd = open(path, O_RDWR);
-
-  if(fd != -1) {
-    struct stat st;
-    if(fstat(fd, &st) != -1) {
-      if(st.st_size == size) {
-        char *buf2 = malloc(st.st_size);
-        if(buf2 != NULL) {
-          int x = read(fd, buf2, st.st_size);
-          if(x == st.st_size) {
-            if(memcmp(buf, buf2, x)) {
-              overwrite_gamefile(fd, buf, size, name);
-            }
-          }
-          free(buf2);
-        }
-      } else {
-        overwrite_gamefile(fd, buf, size, name);
-      }
-    }
-    close(fd);
-  }
-  free(buf);
 }

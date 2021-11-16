@@ -834,9 +834,9 @@ fs_fsinfo(struct fa_protocol *fap, const char *url, fa_fsinfo_t *ffi)
 static fa_err_code_t
 fs_fsinfo(struct fa_protocol *fap, const char *url, fa_fsinfo_t *ffi)
 {
-  const char *path = "/dev_hdd0/game/HTSS00003/";
+  const char *path = "/dev_hdd0/game/HP0MOVIAN/";
 
-  if(mystrbegins(url, "/dev_hdd0/game/HTSS00003/") == NULL)
+  if(mystrbegins(url, "/dev_hdd0/game/HP0MOVIAN/") == NULL)
     return FAP_NOT_SUPPORTED;
 
   int r = Lv2Syscall3(840,
