@@ -1,0 +1,35 @@
+name: Build Release
+
+on: 
+  release:
+    types: [released]
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-20.04
+    
+    container:
+      image: ubuntu:xenial
+
+    steps:
+
+    - name: Install build requirements
+      run: |
+        apt-get update
+        apt-get -y install git-core build-essential autoconf bison flex libelf-dev libtool pkg-config texinfo libncurses5-dev libz-dev python-dev libssl-dev libgmp3-dev ccache zip curl wget
+
+    - name: Build release
+      run: |
+        mkdir -p /project/workdir
+        cd /project
+        git clone https://github.com/rhynec/Movian-Hybrid.git
+        cd ./Movian-Hybrid
+        bash ./Autobuild.sh -t ps3 -j 9 -w /project/workdir -v 5.0.900
+        mv ./build.ps3/movian.pkg ./build.ps3/Movian-Hybrid.pkg
+
+    - name: Upload final release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: /project/Movian-Hybrid/build.ps3/Movian-Hybrid.pkg
+
