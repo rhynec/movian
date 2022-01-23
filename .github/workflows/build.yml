@@ -1,8 +1,9 @@
 name: Build Release
 
 on: 
-  release:
-    types: [released]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -25,8 +26,9 @@ jobs:
         cd /project
         git clone https://github.com/rhynec/Movian-Hybrid.git
         cd ./Movian-Hybrid
+        git checkout ${GITHUB_REF##*/}
         bash ./Autobuild.sh -t ps3 -j 9 -w /project/workdir -v 5.0.900
-        mv ./build.ps3/movian.pkg ./build.ps3/Movian-Hybrid.pkg
+        mv ./build.ps3/movian.pkg ./build.ps3/Movian_Hybrid.pkg
 
     - name: Upload final release
       uses: softprops/action-gh-release@v1
