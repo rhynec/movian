@@ -29,6 +29,7 @@ SPRXLINKER := $(PSL1GHT)/host/bin/sprxlinker
 PACKAGE_FINALIZE := $(PSL1GHT)/host/bin/package_finalize
 
 ICON0 := $(TOPDIR)/support/ps3icon.png
+PIC1 := $(TOPDIR)/support/ps3gb.png
 APPID		:=	HP0MOVIAN
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 
@@ -41,7 +42,7 @@ SELF=${BUILDDIR}/${APPNAME}.self
 SYMS=${BUILDDIR}/${APPNAME}.syms
 ZS=${BUILDDIR}/${APPNAME}.zs
 
-$(BUILDDIR)/PARAM.SFO: $(SFOXML)
+$(BUILDDIR)/pkg/PARAM.SFO: $(SFOXML)
 	$(SFO) --title "$(APPNAMEUSER)" --appid "$(APPID)" -f $< $@
 
 
@@ -57,9 +58,8 @@ ${ELF}: ${BUILDDIR}/${APPNAME}.ziptail src/arch/ps3/ps3.mk
 ${SYMS}: ${BUILDDIR}/${APPNAME}.ziptail src/arch/ps3/ps3.mk
 	${OBJDUMP} -t -j .text $< | awk '{print $$1 " " $$NF}'|sort >$@
 
-${ZS}:  ${BUILDDIR}/zipbundles/bundle.zip ${SYMS} src/arch/ps3/ps3.mk $(BUILDDIR)/PARAM.SFO ${ICON0}
+${ZS}:  ${BUILDDIR}/zipbundles/bundle.zip ${SYMS} src/arch/ps3/ps3.mk
 	cp $< $@
-	cp ${ICON0} $(BUILDDIR)/ICON0.PNG
 	zip -9j ${ZS} ${SYMS}
 
 ${SELF}: ${ELF} ${ZS} src/arch/ps3/ps3.mk
@@ -73,9 +73,9 @@ $(BUILDDIR)/pkg/USRDIR/EBOOT.BIN: ${EBOOT}  src/arch/ps3/ps3.mk
 	@mkdir -p $(BUILDDIR)/pkg/USRDIR
 	${MAKE_SELF_NPDRM} $< $@ $(CONTENTID)
 
-$(BUILDDIR)/${APPNAME}.pkg: $(BUILDDIR)/pkg/USRDIR/EBOOT.BIN $(BUILDDIR)/pkg/USRDIR/${APPNAME}.self $(BUILDDIR)/PARAM.SFO
+$(BUILDDIR)/${APPNAME}.pkg: $(BUILDDIR)/pkg/USRDIR/EBOOT.BIN $(BUILDDIR)/pkg/USRDIR/${APPNAME}.self $(BUILDDIR)/pkg/PARAM.SFO
 	cp $(ICON0) $(BUILDDIR)/pkg/ICON0.PNG
-	cp $(BUILDDIR)/PARAM.SFO $(BUILDDIR)/pkg/PARAM.SFO
+	cp $(PIC1) $(BUILDDIR)/pkg/PIC1.PNG
 	$(PKG) --contentid $(CONTENTID) $(BUILDDIR)/pkg/ $@
 
 $(BUILDDIR)/${APPNAME}_geohot.pkg: $(BUILDDIR)/${APPNAME}.pkg  src/arch/ps3/ps3.mk
