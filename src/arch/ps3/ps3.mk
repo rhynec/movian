@@ -29,7 +29,7 @@ SPRXLINKER := $(PSL1GHT)/host/bin/sprxlinker
 PACKAGE_FINALIZE := $(PSL1GHT)/host/bin/package_finalize
 
 ICON0 := $(TOPDIR)/support/ps3icon.png
-PIC1 := $(TOPDIR)/support/ps3gb.png
+PIC1 := $(TOPDIR)/support/ps3bg.png
 APPID		:=	HP0MOVIAN
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 
